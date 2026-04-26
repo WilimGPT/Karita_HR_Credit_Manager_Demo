@@ -89,7 +89,10 @@
       font-size: 11px;
       font-style: normal;
       font-family: Arial, sans-serif;
-      white-space: nowrap;
+      width: max-content;
+      max-width: 400px;
+      white-space: normal;
+      text-align: left;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.15s;
@@ -121,23 +124,44 @@
     .students-table th { font-weight: normal; background: var(--color-surface); }
     .students-table td.name-cell { text-align: left; }
 
-    .col-minus { color: var(--color-decrease); font-size: var(--font-size-sm); }
-    .col-plus  { color: var(--color-increase); font-size: var(--font-size-sm); }
+    /* --- Reset button --- */
 
-    /* --- Adjust buttons (▼ / ▲) --- */
-
-    .btn-adjust {
+    .btn-reset {
       background: none;
       border: none;
       cursor: pointer;
-      padding: 2px 4px;
+      font-size: 14px;
+      color: var(--color-border);
+      padding: 0;
+      line-height: 1;
+    }
+    .btn-reset:hover { color: var(--color-text); }
+
+    /* --- Adjust button group ( - | + ) --- */
+
+    .btn-group { display: inline-flex; user-select: none; }
+
+    .btn-adjust {
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      color: var(--color-text);
+      cursor: pointer;
+      padding: 4px 12px;
       font-size: var(--font-size-base);
       line-height: 1;
     }
-    .btn-adjust.minus { color: var(--color-decrease); }
-    .btn-adjust.plus  { color: var(--color-increase); }
-    .btn-adjust:hover    { opacity: 0.65; }
-    .btn-adjust:disabled { opacity: 0.25; cursor: default; }
+    .btn-adjust.minus { border-radius: 4px 0 0 4px; }
+    .btn-adjust.plus  { border-radius: 0 4px 4px 0; margin-left: -1px; }
+    .btn-adjust:hover:not(:disabled) { background: var(--color-surface); }
+    .btn-adjust:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* --- Company status message --- */
+
+    .company-status {
+      padding: 10px 0;
+      color: var(--color-text);
+      font-style: italic;
+    }
 
     /* --- Change column value --- */
 
@@ -211,7 +235,7 @@
   </div>
 
   <!-- ===== CREDIT POOL ===== -->
-  <div class="section">
+  <div class="section" id="pool-section" hidden>
     <table class="pool-table">
       <tr>
         <td class="pool-label">Credit Pool</td>
@@ -225,17 +249,19 @@
     </table>
   </div>
 
+  <!-- ===== COMPANY STATUS MESSAGE ===== -->
+  <div id="company-status" class="company-status" hidden></div>
+
   <!-- ===== STUDENTS TABLE ===== -->
-  <div class="section">
+  <div class="section" id="students-section" hidden>
     <table class="students-table">
       <thead>
         <tr>
-          <th></th>
+          <th><button class="btn-reset" id="btn-reset" title="Reset all changes">↺</button></th>
           <th>total <span class="tooltip-icon" data-tip="private_classes_allowed value. Read only value in our UI.">i</span></th>
           <th>used <span class="tooltip-icon" data-tip="private_classes_allowed - private_classes_remaining. Read only value in our UI.">i</span></th>
           <th>remaining <span class="tooltip-icon" data-tip="private_classes_remaining">i</span></th>
-          <th class="col-minus">- <span class="tooltip-icon" data-tip="Remove one credit from the student, add one to the pool.">i</span></th>
-          <th class="col-plus">+ <span class="tooltip-icon" data-tip="Add one credit to the student, remove one from the pool.">i</span></th>
+          <th>adjust <span class="tooltip-icon" data-tip="Click − or + to adjust by 1. Hold either button for 2s to bulk-adjust: − returns all of the student's credits to the pool, + gives all pool credits to this student.">i</span></th>
           <th>change <span class="tooltip-icon" data-tip="Indicates the difference proposed (+/-) from the current remaining value.">i</span></th>
         </tr>
       </thead>
@@ -244,7 +270,7 @@
   </div>
 
   <!-- ===== CONFIRM CHANGES ===== -->
-  <div class="confirm-row">
+  <div class="confirm-row" id="confirm-section" hidden>
     <button class="btn-confirm" id="btn-confirm">
       confirm changes
       <span class="tooltip-icon" data-tip="Calls the users api again for affected users (including placeholder student). Confirms that proposed changes would not result in negative values, in case of credit count changes since the initial API call. In that case, flags and refreshes, keeping the proposed changes which were okay. Otherwise, executes.">i</span>
