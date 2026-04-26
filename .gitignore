@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+backend/.env
+
+# Project-specific exclusions
+ref/
+.claude/
