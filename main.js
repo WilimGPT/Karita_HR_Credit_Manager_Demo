@@ -23,10 +23,10 @@
     tbody.innerHTML = '';
 
     studentEntries.forEach((student, i) => {
-      const totalCredits     = student.private_classes_allowed;
-      const usedCredits      = totalCredits - student.private_classes_remaining;
       const currentRemaining = remaining[i];
       const currentChange    = changes[i];
+      const totalCredits     = student.private_classes_allowed + currentChange;
+      const usedCredits      = student.private_classes_allowed - student.private_classes_remaining;
       const canDecrease      = currentRemaining > 0;
       const canIncrease      = creditPool > 0;
 
